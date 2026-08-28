@@ -23,10 +23,9 @@ export const connect = async () => {
 
   for (let i = 0; i < TRIES; i += 1) {
     try {
-      // Primary Attempt: Family 0 (Dual-Stack: allows driver to resolve IPv6 and IPv4)
+      // Primary Attempt: Default options (Omitting family allows native Dual-Stack IPv6/IPv4 resolution)
       client = await connectToDb(endpoint, {
         connectTimeoutMS: 3000,
-        family: 0,
       });
       break;
     } catch (e: any) {
@@ -35,7 +34,7 @@ export const connect = async () => {
         `Dual-stack database connection attempt failed (${i + 1}/${TRIES}): ${e?.message || e}`
       );
 
-      // Secondary Attempt (Fallback): Force Family 4 (IPv4) if dual-stack resolution failed
+      // Secondary Attempt (Fallback): Force Family 4 (IPv4) if default resolution fails
       try {
         logger.info("Retrying database connection using forced IPv4 fallback...");
         client = await connectToDb(endpoint, {
